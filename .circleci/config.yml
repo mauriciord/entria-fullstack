@@ -46,7 +46,6 @@ aliases:
         -f ./packages/server/Dockerfile \
        -t $IMAGE_NAME_SERVER .
       docker images
-
   # Job Filters
 
   # Run only for not master branches
@@ -67,10 +66,6 @@ aliases:
     branches:
       only:
         - master
-        
-defaults: &defaults
-  environment:
-    IMAGE_NAME_SERVER: "server"
 
 defaults: &defaults
   working_directory: ~/app
@@ -98,13 +93,13 @@ jobs:
     steps:
       - run: *lint
       - restore_cache: *restore-mongodb-binaries-cache
-
   test:
     <<: *defaults
-    - run: *test
-    - save_cache: *save-mongodb-binaries-cache
-    - store_test_results:
-      path: ./test-results
+    steps:
+      - run: *test
+      - save_cache: *save-mongodb-binaries-cache
+      - store_test_results:
+          path: ./test-results
 
   build_server:
     <<: *defaults
