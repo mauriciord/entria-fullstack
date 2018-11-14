@@ -67,6 +67,10 @@ aliases:
     branches:
       only:
         - master
+        
+defaults: &defaults
+  environment:
+    IMAGE_NAME_SERVER: "server"
 
 defaults: &defaults
   working_directory: ~/app
@@ -89,15 +93,18 @@ jobs:
           root: .
           paths: .
 
-  verify_pr:
+  lint:
     <<: *defaults
     steps:
       - run: *lint
       - restore_cache: *restore-mongodb-binaries-cache
-      - run: *test
-      - save_cache: *save-mongodb-binaries-cache
-      - store_test_results:
-          path: ./test-results
+
+  test:
+    <<: *defaults
+    - run: *test
+    - save_cache: *save-mongodb-binaries-cache
+    - store_test_results:
+      path: ./test-results
 
   build_server:
     <<: *defaults
